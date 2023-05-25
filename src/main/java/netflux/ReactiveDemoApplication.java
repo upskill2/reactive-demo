@@ -6,8 +6,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
-/*@ComponentScan (basePackages = {"java.netflux.*"})
-@EnableMongoRepositories (basePackages = "java.netflux.repositories")*/
+@ComponentScan (basePackages = {"netflux.*"})
+/*@EnableMongoRepositories (basePackages = "java.netflux.repositories")*/
 public class ReactiveDemoApplication {
 
 	public static void main(String[] args) {
