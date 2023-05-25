@@ -1,6 +1,7 @@
 package netflux.bootstrap;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import netflux.domain.Movie;
 import netflux.repositories.MovieRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -9,6 +10,7 @@ import reactor.core.publisher.Flux;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class InitMovies implements CommandLineRunner {
     private final MovieRepository movieRepository;
 
@@ -19,6 +21,6 @@ public class InitMovies implements CommandLineRunner {
                         "Back to the Future", "Meet the Fluxes", "Lord of the Fluxes")
                         .map (title-> Movie.builder ().title (title).build ())
                         .flatMap (movieRepository::save)).subscribe (null, null,
-                        ()-> movieRepository.findAll ().subscribe (System.out::println));
+                        ()-> movieRepository.findAll ().subscribe (movie-> log.info ("{}", movie)));
     }
 }
