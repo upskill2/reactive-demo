@@ -1,5 +1,6 @@
-package domain;
+package monoandflux;
 
+import monoandflux.domain.Person;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
