@@ -33,7 +33,7 @@ public class Beer {
         @Type(type="org.hibernate.type.UUIDCharType")
         @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)*/
     @Id
-    private UUID id;
+    private Integer id;
 
     //  @Version
     private Long version;
