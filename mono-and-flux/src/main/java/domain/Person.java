@@ -1,4 +1,4 @@
-package monoandflux.domain;
+package domain;
 
 
 import lombok.AllArgsConstructor;

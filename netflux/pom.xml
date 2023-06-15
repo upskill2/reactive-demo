@@ -9,20 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>guru.springframework</groupId>
-    <artifactId>reactive-demo</artifactId>
+    <artifactId>netflux</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>reactive-demo</name>
+    <name>netflux</name>
     <description>Reactive programming demo</description>
-
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>beer-client</module>
-        <module>sfg-section5-reactive-brewery</module>
-        <module>sfg-restful-brewery</module>
-        <module>mono-and-flux</module>
-        <module>netflux</module>
-    </modules>
 
     <properties>
         <java.version>17</java.version>

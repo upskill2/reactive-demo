@@ -1,12 +1,12 @@
-package netflux.bootstrap;
+package bootstrap;
 
+import domain.Movie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import netflux.domain.Movie;
-import netflux.repositories.MovieRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import repositories.MovieRepository;
 
 @RequiredArgsConstructor
 @Component

@@ -1,6 +1,7 @@
-package netflux.repositories;
+package repositories;
 
-import netflux.domain.Movie;
+
+import domain.Movie;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 public interface MovieRepository extends ReactiveMongoRepository<Movie, String> {

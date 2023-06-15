@@ -1,9 +1,9 @@
-package netflux.controllers;
+package controllers;
 
+import domain.Movie;
+import domain.MovieEvent;
 import lombok.RequiredArgsConstructor;
-import netflux.domain.Movie;
-import netflux.domain.MovieEvent;
-import netflux.services.MovieService;
+
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import services.MovieService;
 
 import java.awt.*;
 

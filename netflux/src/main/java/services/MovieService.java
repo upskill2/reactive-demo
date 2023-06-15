@@ -1,7 +1,8 @@
-package netflux.services;
+package services;
 
-import netflux.domain.Movie;
-import netflux.domain.MovieEvent;
+
+import domain.Movie;
+import domain.MovieEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

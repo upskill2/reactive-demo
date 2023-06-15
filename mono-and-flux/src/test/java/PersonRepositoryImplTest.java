@@ -1,7 +1,5 @@
-package domain;
+import domain.Person;
 
-import monoandflux.PersonRepositoryImpl;
-import monoandflux.domain.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -47,7 +45,6 @@ class PersonRepositoryImplTest {
         personMono2.subscribe (resultId -> assertEquals (4, resultId.getId ()));
 
 
-
         Mono<Person> personMono3 = personRepository.findById (9);
         StepVerifier.create (personMono3).expectNextCount (0).verifyComplete ();
         personMono3.subscribe (resultId -> assertEquals ("", resultId.getId ()));
@@ -55,7 +52,7 @@ class PersonRepositoryImplTest {
         int idTest1 = personMono.block ().getId ();
         int idTest2 = personMono2.block ().getId ();
 
-        int t = personMono.doOnNext (person-> {
+        int t = personMono.doOnNext (person -> {
             System.out.println (person.toString ());
         }).block ().getId ();
 

@@ -1,12 +1,13 @@
-package netflux.services;
+package services;
 
+import domain.Movie;
+import domain.MovieEvent;
 import lombok.RequiredArgsConstructor;
-import netflux.domain.Movie;
-import netflux.domain.MovieEvent;
-import netflux.repositories.MovieRepository;
+
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import repositories.MovieRepository;
 
 import java.time.Duration;
 import java.util.Date;
