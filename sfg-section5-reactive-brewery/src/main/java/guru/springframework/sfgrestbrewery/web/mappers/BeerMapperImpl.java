@@ -3,8 +3,8 @@ package guru.springframework.sfgrestbrewery.web.mappers;
 import guru.springframework.sfgrestbrewery.domain.Beer;
 import guru.springframework.sfgrestbrewery.web.model.BeerDto;
 import guru.springframework.sfgrestbrewery.web.model.BeerStyleEnum;
-import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 public class BeerMapperImpl implements BeerMapper {

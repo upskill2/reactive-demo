@@ -6,7 +6,6 @@ import guru.springframework.sfgrestbrewery.web.model.BeerPagedList;
 import guru.springframework.sfgrestbrewery.web.model.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +63,7 @@ public class BeerController {
 
     @GetMapping ("beerUpc/{upc}")
     public ResponseEntity<Mono<BeerDto>> getBeerByUpc (@PathVariable ("upc") String upc) {
-        return ResponseEntity.ok (Mono.just ((beerService.getByUpc (upc))));
+        return ResponseEntity.ok ((beerService.getByUpc (upc)));
     }
 
     @PostMapping (path = "beer")

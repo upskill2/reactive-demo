@@ -2,7 +2,6 @@ package guru.springframework.sfgrestbrewery.services;
 
 import guru.springframework.sfgrestbrewery.domain.Beer;
 import guru.springframework.sfgrestbrewery.repositories.BeerRepository;
-import guru.springframework.sfgrestbrewery.web.controller.NotFoundException;
 import guru.springframework.sfgrestbrewery.web.mappers.BeerMapper;
 import guru.springframework.sfgrestbrewery.web.model.BeerDto;
 import guru.springframework.sfgrestbrewery.web.model.BeerPagedList;
@@ -13,11 +12,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Created by jt on 2019-04-20.
@@ -109,8 +106,8 @@ public class BeerServiceImpl implements BeerService {
 
     @Cacheable (cacheNames = "beerUpcCache")
     @Override
-    public BeerDto getByUpc (String upc) {
-        return beerMapper.beerToBeerDto (beerRepository.findByUpc (upc));
+    public Mono<BeerDto> getByUpc (String upc) {
+        return beerRepository.findByUpc (upc).map (beerMapper::beerToBeerDto);
     }
 
     @Override

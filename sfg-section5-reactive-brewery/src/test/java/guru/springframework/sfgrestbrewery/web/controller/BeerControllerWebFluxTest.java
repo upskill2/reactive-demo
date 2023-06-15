@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -32,26 +30,30 @@ class BeerControllerWebFluxTest {
     @MockBean
     BeerService beerService;
 
-    BeerDto validBeer;
+    Mono<BeerDto> validBeer;
+
+    Mono<List<BeerDto>> beerDtoList;
 
     BeerPagedList beerPagedList;
 
     @BeforeEach
     void setUp () {
-        validBeer = BeerDto.builder ()
+        BeerDto beerDto = BeerDto.builder ()
                 .beerName ("Test Beer")
                 .beerStyle ("PALE_ALE")
                 .upc (BeerLoader.BEER_2_UPC)
                 .build ();
+        validBeer = Mono.just (beerDto);
 
-        beerPagedList = new BeerPagedList (java.util.List.of (validBeer, validBeer));
+        beerDtoList = Mono.just (List.of (beerDto, beerDto));
+        beerPagedList = new BeerPagedList (beerDtoList);
 
     }
 
     @Test
     void getBeerById () {
         UUID beerId = UUID.randomUUID ();
-        given (beerService.getById (any (), any ())).willReturn (Mono.just(validBeer));
+        given (beerService.getById (any (), any ())).willReturn (validBeer);
 
         webTestClient.get ()
                 .uri ("/api/v1/beer/" + beerId)
@@ -59,7 +61,7 @@ class BeerControllerWebFluxTest {
                 .exchange ()
                 .expectStatus ().isOk ()
                 .expectBody (BeerDto.class)
-                .value (beerDto -> beerDto.getBeerName (), equalTo (validBeer.getBeerName ()));
+                .value (beerDto -> beerDto.getBeerName (), equalTo (validBeer.block ().getBeerName ()));
 
     }
 
@@ -74,7 +76,7 @@ class BeerControllerWebFluxTest {
                 .exchange ()
                 .expectStatus ().isOk ()
                 .expectBody (BeerPagedList.class)
-                .value (beerPagedList1 -> beerPagedList1.getContent ().get (0).getBeerName (), equalTo (validBeer.getBeerName ()))
+                .value (beerPagedList1 -> beerPagedList1.getContent ().get (0).getBeerName (), equalTo (validBeer.block ().getBeerName ()))
                 .value (beerPagedList1 -> beerPagedList1.getSize (), equalTo (beerPagedList.getSize ()));
     }
 
@@ -83,12 +85,12 @@ class BeerControllerWebFluxTest {
         given (beerService.getByUpc (any ())).willReturn (validBeer);
 
         webTestClient.get ()
-                .uri ("/api/v1/beerUpc/" + validBeer.getUpc ())
+                .uri ("/api/v1/beerUpc/" + validBeer.block ().getUpc ())
                 .accept (MediaType.APPLICATION_JSON)
                 .exchange ()
                 .expectStatus ().isOk ()
                 .expectBody (BeerDto.class)
-                .value (beerDto -> beerDto.getBeerName (), equalTo (validBeer.getBeerName ()));
+                .value (beerDto -> beerDto.getBeerName (), equalTo (validBeer.block ().getBeerName ()));
     }
 
 }
