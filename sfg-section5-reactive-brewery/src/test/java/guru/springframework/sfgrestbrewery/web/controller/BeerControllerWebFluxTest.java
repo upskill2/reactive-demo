@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
@@ -50,7 +51,7 @@ class BeerControllerWebFluxTest {
     @Test
     void getBeerById () {
         UUID beerId = UUID.randomUUID ();
-        given (beerService.getById (any (), any ())).willReturn (validBeer);
+        given (beerService.getById (any (), any ())).willReturn (Mono.just(validBeer));
 
         webTestClient.get ()
                 .uri ("/api/v1/beer/" + beerId)
