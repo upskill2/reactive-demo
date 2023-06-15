@@ -28,9 +28,9 @@ public class BeerServiceImpl implements BeerService {
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
 
-    @Cacheable(cacheNames = "beerListCache", condition = "#showInventoryOnHand == false ")
+    @Cacheable (cacheNames = "beerListCache", condition = "#showInventoryOnHand == false ")
     @Override
-    public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventoryOnHand) {
+    public BeerPagedList listBeers (String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventoryOnHand) {
 
         BeerPagedList beerPagedList = null;
         Page<Beer> beerPage;
@@ -75,9 +75,9 @@ public class BeerServiceImpl implements BeerService {
         return null;
     }
 
-    @Cacheable(cacheNames = "beerCache", key = "#beerId", condition = "#showInventoryOnHand == false ")
+    @Cacheable (cacheNames = "beerCache", key = "#beerId", condition = "#showInventoryOnHand == false ")
     @Override
-    public BeerDto getById(UUID beerId, Boolean showInventoryOnHand) {
+    public BeerDto getById (UUID beerId, Boolean showInventoryOnHand) {
      /*   if (showInventoryOnHand) {
             return beerMapper.beerToBeerDtoWithInventory(
                     beerRepository.findById(beerId).orElseThrow(NotFoundException::new)
@@ -91,13 +91,13 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public BeerDto saveNewBeer(BeerDto beerDto) {
-      //  return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beerDto)));
+    public BeerDto saveNewBeer (BeerDto beerDto) {
+        //  return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beerDto)));
         return null;
     }
 
     @Override
-    public BeerDto updateBeer(UUID beerId, BeerDto beerDto) {
+    public BeerDto updateBeer (UUID beerId, BeerDto beerDto) {
 /*        Beer beer = beerRepository.findById(beerId).orElseThrow(NotFoundException::new);
 
         beer.setBeerName(beerDto.getBeerName());
@@ -109,14 +109,14 @@ public class BeerServiceImpl implements BeerService {
         return null;
     }
 
-    @Cacheable(cacheNames = "beerUpcCache")
+    @Cacheable (cacheNames = "beerUpcCache")
     @Override
-    public BeerDto getByUpc(String upc) {
-        return beerMapper.beerToBeerDto(beerRepository.findByUpc(upc));
+    public BeerDto getByUpc (String upc) {
+        return beerMapper.beerToBeerDto (beerRepository.findByUpc (upc));
     }
 
     @Override
-    public void deleteBeerById(UUID beerId) {
-        beerRepository.deleteById(beerId);
+    public void deleteBeerById (UUID beerId) {
+        beerRepository.deleteById (beerId);
     }
 }
