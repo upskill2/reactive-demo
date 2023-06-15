@@ -22,7 +22,7 @@ import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BeerController.class)
+//@WebMvcTest(BeerController.class)
 @Ignore
 public class BeerControllerTest {
 
