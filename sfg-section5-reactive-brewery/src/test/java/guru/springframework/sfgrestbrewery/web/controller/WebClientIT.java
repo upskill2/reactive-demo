@@ -3,7 +3,7 @@ package guru.springframework.sfgrestbrewery.web.controller;
 import guru.springframework.sfgrestbrewery.bootstrap.BeerLoader;
 import guru.springframework.sfgrestbrewery.web.model.BeerDto;
 import guru.springframework.sfgrestbrewery.web.model.BeerPagedList;
-import org.junit.Ignore;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +18,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 /**
  * Created by jt on 3/7/21.
@@ -77,7 +80,6 @@ public class WebClientIT {
     }
 
     @Test
-    @Ignore
     void testListBeers () throws InterruptedException {
 
         CountDownLatch countDownLatch = new CountDownLatch (1);
@@ -96,6 +98,6 @@ public class WebClientIT {
             countDownLatch.countDown ();
         });
 
-        countDownLatch.await ();
+        countDownLatch.await (1000, TimeUnit.MILLISECONDS);
     }
 }
