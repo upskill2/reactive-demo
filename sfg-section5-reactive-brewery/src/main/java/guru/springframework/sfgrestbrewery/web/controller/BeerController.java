@@ -13,6 +13,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by jt on 2019-04-20.
@@ -69,19 +71,22 @@ public class BeerController {
     @PostMapping (path = "beer")
     public ResponseEntity<Void> saveNewBeer (@RequestBody @Validated BeerDto beerDto) {
 
-        BeerDto savedBeer = beerService.saveNewBeer (beerDto);
+        AtomicInteger atomicBeerId = new AtomicInteger ();
+
+        beerService.saveNewBeer (beerDto).subscribe (saveBeerDto -> atomicBeerId.set (saveBeerDto.getId ()));
 
         return ResponseEntity
                 .created (UriComponentsBuilder
-                        .fromHttpUrl ("http://api.springframework.guru/api/v1/beer/" + savedBeer.getId ().toString ())
+                        .fromHttpUrl ("http://api.springframework.guru/api/v1/beer/" + atomicBeerId.get ())
                         .build ().toUri ())
                 .build ();
     }
 
     @PutMapping ("beer/{beerId}")
-    public ResponseEntity<Void> updateBeerById (@PathVariable ("beerId") UUID beerId, @RequestBody @Validated BeerDto beerDto) {
-        //return new ResponseEntity<> (beerService.updateBeer (beerId, beerDto), HttpStatus.NO_CONTENT);
-        return ResponseEntity.noContent ().build ();
+    public ResponseEntity<Void> updateBeerById (@PathVariable ("beerId") Integer beerId, @RequestBody @Validated BeerDto beerDto) {
+        beerService.updateBeer (beerId, beerDto).subscribe ();
+        return ResponseEntity.ok ().build ();
+
     }
 
     @DeleteMapping ("beer/{beerId}")

@@ -6,9 +6,9 @@ import guru.springframework.sfgrestbrewery.services.BeerService;
 import guru.springframework.sfgrestbrewery.web.model.BeerDto;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,7 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 //@WebMvcTest(BeerController.class)
 
-public class BeerControllerTest {
+@Disabled
+public class OldBeerControllerTest {
 
     @MockBean
     BeerService beerService;
@@ -67,7 +68,7 @@ public class BeerControllerTest {
         BeerDto savedDto = BeerDto.builder().id(anyInt ()).beerName("New Beer").build();
         String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
-        given(beerService.saveNewBeer(any())).willReturn(savedDto);
+        given(beerService.saveNewBeer(any())).willReturn(null);
 
         mockMvc.perform(post("/api/v1/beer/")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -5,6 +5,7 @@ import guru.springframework.sfgrestbrewery.domain.Beer;
 import guru.springframework.sfgrestbrewery.services.BeerService;
 import guru.springframework.sfgrestbrewery.web.model.BeerDto;
 import guru.springframework.sfgrestbrewery.web.model.BeerPagedList;
+import guru.springframework.sfgrestbrewery.web.model.BeerStyleEnum;
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +27,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static guru.springframework.sfgrestbrewery.web.model.BeerStyleEnum.PALE_ALE;
 import static org.assertj.core.internal.bytebuddy.implementation.bytecode.constant.IntegerConstant.ONE;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 
@@ -61,7 +64,6 @@ class BeerControllerWebFluxTest {
                 .upc (BeerLoader.BEER_2_UPC)
                 .build ();
         validBeer = Mono.just (beerDto);
-
 
         beerPaged = new BeerPagedList (List.of (beerDto, beerDto), PageRequest.of (1, 1), 2L);
         beerPagedList = Mono.just (beerPaged);
