@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 public class WebClientITV2Test {
 
     public static final String BASE_URL = "http://localhost:8080";
-    public static final String BEER_PATH_V2 = "/api/v2/beer";
+    public static final String BEER_PATH_V2 = "/api/v2/beer/";
     public static final String BEER_UPC_PATH_V2 = "/api/v2/beerUpc/";
 
     WebClient webClient;
@@ -68,6 +68,7 @@ public class WebClientITV2Test {
         assertThat (countDownLatch.getCount ()).isEqualTo (0);
     }
 
+
     @Test
     void testGetBeerByUPC () throws InterruptedException {
 
@@ -82,6 +83,26 @@ public class WebClientITV2Test {
         beerDtoMono.subscribe (beerDto -> {
             assertThat (beerDto).isNotNull ();
             assertThat (beerDto.getBeerName ()).isNotBlank ();
+            countDownLatch.countDown ();
+        });
+
+        countDownLatch.await (1000, TimeUnit.MILLISECONDS);
+        assertThat (countDownLatch.getCount ()).isEqualTo (0);
+    }
+
+    @Test
+    void testGetBeerByUPCNotFound () throws InterruptedException {
+
+        CountDownLatch countDownLatch = new CountDownLatch (1);
+        String upc = "not_found";
+
+
+        Mono<BeerDto> beerDtoMono = webClient.get ().uri (BEER_UPC_PATH_V2 + upc)
+                .accept (MediaType.APPLICATION_JSON)
+                .retrieve ().bodyToMono (BeerDto.class);
+
+        beerDtoMono.subscribe (beerDto -> {
+        }, throwable -> {
             countDownLatch.countDown ();
         });
 
@@ -129,7 +150,7 @@ public class WebClientITV2Test {
         beerResponseMono.publishOn (Schedulers.parallel ())
                 .doOnError (throwable -> {
                     log.error ("Error Occurred");
-                 //   countDownLatch.countDown ();
+                    //   countDownLatch.countDown ();
                 })
                 .subscribe (responseEntity -> {
                     assertThat (responseEntity).isNotNull ();

@@ -6,9 +6,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
+
+
 
 @Slf4j
 @Component
@@ -16,10 +22,21 @@ import reactor.core.publisher.Mono;
 public class BeerHandler2 {
 
     private final BeerService beerService;
+    private final Validator validator;
+
+    private void validateBeer (BeerDto beerDto) {
+        Errors errors = new BeanPropertyBindingResult (beerDto, "beerDto");
+        validator.validate (beerDto, errors);
+
+        if(errors.hasErrors ()){
+            throw new ServerWebInputException (errors.toString ());
+        }
+
+    }
 
     public Mono<ServerResponse> saveNewBeer (ServerRequest serverRequest) {
 
-        return beerService.saveNewBeerMono (serverRequest.bodyToMono (BeerDto.class))
+        return beerService.saveNewBeerMono (serverRequest.bodyToMono (BeerDto.class).doOnNext (this::validateBeer))
                 .flatMap (beerDto -> {
                     return ServerResponse.ok ()
                             .header ("Location", "/api/v2/beer/" + beerDto.getId ())
