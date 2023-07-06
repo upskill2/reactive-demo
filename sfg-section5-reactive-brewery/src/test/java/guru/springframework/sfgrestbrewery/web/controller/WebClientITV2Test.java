@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static guru.springframework.sfgrestbrewery.web.functional.BeerRouterConfig.API_V_2_BEER_UPC_UPC;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -35,7 +36,8 @@ import static org.junit.Assert.assertEquals;
 public class WebClientITV2Test {
 
     public static final String BASE_URL = "http://localhost:8080";
-    public static final String BEER_PATH_V2 = "/api/v2/beer/";
+    public static final String BEER_PATH_V2 = "/api/v2/beer";
+    public static final String BEER_UPC_PATH_V2 = "/api/v2/beerUpc/";
 
     WebClient webClient;
 
@@ -47,12 +49,33 @@ public class WebClientITV2Test {
                 .build ();
     }
 
-     @Test
+    @Test
     void testGetBeerById () throws InterruptedException {
 
         CountDownLatch countDownLatch = new CountDownLatch (1);
 
         Mono<BeerDto> beerDtoMono = webClient.get ().uri (BEER_PATH_V2 + 1)
+                .accept (MediaType.APPLICATION_JSON)
+                .retrieve ().bodyToMono (BeerDto.class);
+
+        beerDtoMono.subscribe (beerDto -> {
+            assertThat (beerDto).isNotNull ();
+            assertThat (beerDto.getBeerName ()).isNotBlank ();
+            countDownLatch.countDown ();
+        });
+
+        countDownLatch.await (1000, TimeUnit.MILLISECONDS);
+        assertThat (countDownLatch.getCount ()).isEqualTo (0);
+    }
+
+    @Test
+    void testGetBeerByUPC () throws InterruptedException {
+
+        CountDownLatch countDownLatch = new CountDownLatch (1);
+        String upc = "0631234200036";
+
+
+        Mono<BeerDto> beerDtoMono = webClient.get ().uri (BEER_UPC_PATH_V2 + upc)
                 .accept (MediaType.APPLICATION_JSON)
                 .retrieve ().bodyToMono (BeerDto.class);
 
@@ -87,5 +110,63 @@ public class WebClientITV2Test {
         assertThat (countDownLatch.getCount ()).isEqualTo (0);
     }
 
+    @Test
+    void testSaveBeer () throws InterruptedException {
+
+        CountDownLatch countDownLatch = new CountDownLatch (1);
+
+        BeerDto beerDto = BeerDto.builder ()
+                .beerName ("New Beer")
+                .beerStyle ("ALE")
+                .build ();
+
+        Mono<ResponseEntity<Void>> beerResponseMono = webClient.post ().uri (BEER_PATH_V2)
+                .body (BodyInserters.fromValue (beerDto))
+                .accept (MediaType.APPLICATION_JSON)
+                .retrieve ()
+                .toBodilessEntity ();
+
+        beerResponseMono.publishOn (Schedulers.parallel ())
+                .doOnError (throwable -> {
+                    log.error ("Error Occurred");
+                 //   countDownLatch.countDown ();
+                })
+                .subscribe (responseEntity -> {
+                    assertThat (responseEntity).isNotNull ();
+                    assertThat (responseEntity.getStatusCode ().is2xxSuccessful ());
+                    countDownLatch.countDown ();
+                });
+
+        countDownLatch.await (1000, TimeUnit.MILLISECONDS);
+        assertThat (countDownLatch.getCount ()).isEqualTo (0);
+    }
+
+    @Test
+    void testSaveBeerBadRequest () throws InterruptedException {
+
+        CountDownLatch countDownLatch = new CountDownLatch (2);
+
+        BeerDto beerDto = BeerDto.builder ()
+                .price (new BigDecimal ("12.99"))
+                .build ();
+
+
+        Mono<ResponseEntity<Void>> beerResponseMono = webClient.post ().uri (BEER_PATH_V2)
+                .contentType (MediaType.APPLICATION_JSON)
+                .body (BodyInserters.fromValue (beerDto))
+                .retrieve ().toBodilessEntity ();
+
+
+        beerResponseMono.publishOn (Schedulers.parallel ())
+                .subscribe (responseEntity -> {
+                }, throwable -> {
+                    countDownLatch.countDown ();
+                });
+
+
+        countDownLatch.await (1000, TimeUnit.MILLISECONDS);
+        assertThat (countDownLatch.getCount ()).isOne ();
+
+    }
 
 }
