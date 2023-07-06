@@ -70,10 +70,12 @@ public class BeerServiceImpl implements BeerService {
     public Mono<BeerDto> getById (Integer beerId, Boolean showInventoryOnHand) {
         if (showInventoryOnHand) {
             return
-                    beerRepository.findById (beerId).map (beer -> beerMapper.beerToBeerDtoWithInventory (beer));
+                    beerRepository.findById (beerId).map (beer -> beerMapper.beerToBeerDtoWithInventory (beer))
+                           ;
         } else {
             return
-                    beerRepository.findById (beerId).map (beer -> beerMapper.beerToBeerDto (beer));
+                    beerRepository.findById (beerId).map (beer -> beerMapper.beerToBeerDto (beer))
+                            ;
         }
     }
 
@@ -108,6 +110,6 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public void deleteBeerById (Integer beerId) {
-        beerRepository.deleteById (beerId);
+        beerRepository.deleteById (beerId).subscribe ();
     }
 }
