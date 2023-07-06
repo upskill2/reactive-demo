@@ -84,8 +84,20 @@ public class BeerController {
 
     @PutMapping ("beer/{beerId}")
     public ResponseEntity<Void> updateBeerById (@PathVariable ("beerId") Integer beerId, @RequestBody @Validated BeerDto beerDto) {
-        beerService.updateBeer (beerId, beerDto).subscribe ();
-        return ResponseEntity.ok ().build ();
+    AtomicBoolean atomicBoolean = new AtomicBoolean (false);
+
+        beerService.updateBeer (beerId, beerDto).subscribe (saveDto ->{
+            if(saveDto.getId ()!=null){
+                atomicBoolean.set (true);
+
+            }
+        });
+
+        if(atomicBoolean.get ()){
+            return ResponseEntity.noContent ().build ();
+        } else {
+            return ResponseEntity.notFound ().build ();
+        }
 
     }
 
