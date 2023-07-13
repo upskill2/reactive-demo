@@ -22,6 +22,7 @@
         <module>sfg-restful-brewery</module>
         <module>mono-and-flux</module>
         <module>netflux</module>
+        <module>streaming-stock-quote-service</module>
     </modules>
 
     <properties>
