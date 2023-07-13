@@ -1,6 +1,7 @@
 package guru.springframework.sfgrestbrewery.web.functional;
 
 import guru.springframework.sfgrestbrewery.services.BeerService;
+import guru.springframework.sfgrestbrewery.web.controller.NotFoundException;
 import guru.springframework.sfgrestbrewery.web.model.BeerDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -25,6 +25,13 @@ public class BeerHandler {
     private final Validator validator;
 
 
+
+    public Mono<ServerResponse> deleteBeer (ServerRequest serverRequest) {
+        return beerService.reactiveDeleteById(Integer.valueOf (serverRequest.pathVariable ("beerId")))
+                .flatMap (voidMono -> ServerResponse.ok ().build ())
+                .onErrorResume (exception -> exception instanceof NotFoundException, exception -> ServerResponse.notFound ().build ());
+    }
+
     public Mono<ServerResponse> updateBeer (ServerRequest serverRequest) {
         return serverRequest.bodyToMono (BeerDto.class)
                 .doOnNext (this::validateBeer)
@@ -32,8 +39,13 @@ public class BeerHandler {
                     return beerService.updateBeer (Integer.valueOf (serverRequest.pathVariable ("beerId")), beerDto);
                 })
                 .flatMap (savebeerDto -> {
-                    log.info ("Update Beer with ID: {}", savebeerDto.getId ());
-                    return ServerResponse.noContent ().build ();
+                    if (savebeerDto.getId () != null) {
+                        log.info ("Update Beer with ID: {}", savebeerDto.getId ());
+                        return ServerResponse.noContent ().build ();
+                    } else {
+                        log.info ("Beer with ID: {} NOT FOUND", serverRequest.pathVariable ("beerId"));
+                        return ServerResponse.notFound ().build ();
+                    }
                 });
     }
 
@@ -41,7 +53,7 @@ public class BeerHandler {
         Errors errors = new BeanPropertyBindingResult (beerDto, "beerDto");
         validator.validate (beerDto, errors);
 
-        if(errors.hasErrors ()){
+        if (errors.hasErrors ()) {
             throw new ServerWebInputException (errors.toString ());
         }
 

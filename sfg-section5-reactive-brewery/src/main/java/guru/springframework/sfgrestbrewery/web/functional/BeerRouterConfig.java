@@ -26,6 +26,7 @@ public class BeerRouterConfig {
                 .GET (API_V2_BEER_UPC, accept (MediaType.APPLICATION_JSON), beerHandler::getBeerByUpc)
                 .POST (API_V2_POST_BEER, accept (MediaType.APPLICATION_JSON), beerHandler::saveNewBeer)
                 .PUT (API_V2_BEER_ID, accept (MediaType.APPLICATION_JSON), beerHandler::updateBeer)
+                .DELETE (API_V2_BEER_ID, accept (MediaType.APPLICATION_JSON), beerHandler::deleteBeer)
                 .build ();
     }
 
