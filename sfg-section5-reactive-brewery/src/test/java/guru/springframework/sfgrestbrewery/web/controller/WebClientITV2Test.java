@@ -1,10 +1,8 @@
 package guru.springframework.sfgrestbrewery.web.controller;
 
-import guru.springframework.sfgrestbrewery.bootstrap.BeerLoader;
+import guru.springframework.sfgrestbrewery.web.functional.BeerRouterConfig;
 import guru.springframework.sfgrestbrewery.web.model.BeerDto;
-import guru.springframework.sfgrestbrewery.web.model.BeerPagedList;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static guru.springframework.sfgrestbrewery.web.functional.BeerRouterConfig.API_V_2_BEER_UPC_UPC;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -47,6 +44,50 @@ public class WebClientITV2Test {
                 .baseUrl (BASE_URL)
                 .clientConnector (new ReactorClientHttpConnector (HttpClient.create ().wiretap (true)))
                 .build ();
+    }
+
+    @Test
+    void testUpdateBeer () throws InterruptedException {
+
+        final String beerName = "JTs Beer";
+        final Integer beerId = 1;
+
+        CountDownLatch countDownLatch = new CountDownLatch (2);
+
+
+        //update beer
+        webClient.put ().uri (BeerRouterConfig.API_V2_POST_BEER + "/" + beerId)
+                .accept (MediaType.APPLICATION_JSON)
+                .body (BodyInserters
+                        .fromValue (BeerDto.builder ()
+                                .beerName (beerName)
+                                .upc ("0631234200036")
+                                .beerStyle ("PALE_ALE")
+                                .price (new BigDecimal ("12.99"))
+                                .build ()))
+                .retrieve ().toBodilessEntity ()
+                .subscribe (responseEntity -> {
+                    assertThat (responseEntity.getStatusCode ().is2xxSuccessful ());
+                    countDownLatch.countDown ();
+                });
+
+
+        //wait for update thread to happen
+        countDownLatch.await (500, TimeUnit.MILLISECONDS);
+
+        webClient.get ().uri (BeerRouterConfig.API_V2_POST_BEER + "/" + beerId)
+                .accept (MediaType.APPLICATION_JSON)
+                .retrieve ()
+                .bodyToMono (BeerDto.class)
+                .subscribe (beer -> {
+                    assertThat (beer).isNotNull ();
+                    assertThat (beer.getBeerName ()).isNotNull ();
+                    assertThat (beer.getBeerName ()).isEqualTo (beerName);
+                    countDownLatch.countDown ();
+                });
+
+        countDownLatch.await (1000, TimeUnit.MILLISECONDS);
+        assertThat (countDownLatch.getCount ()).isZero ();
     }
 
     @Test

@@ -19,10 +19,23 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class BeerHandler2 {
+public class BeerHandler {
 
     private final BeerService beerService;
     private final Validator validator;
+
+
+    public Mono<ServerResponse> updateBeer (ServerRequest serverRequest) {
+        return serverRequest.bodyToMono (BeerDto.class)
+                .doOnNext (this::validateBeer)
+                .flatMap (beerDto -> {
+                    return beerService.updateBeer (Integer.valueOf (serverRequest.pathVariable ("beerId")), beerDto);
+                })
+                .flatMap (savebeerDto -> {
+                    log.info ("Update Beer with ID: {}", savebeerDto.getId ());
+                    return ServerResponse.noContent ().build ();
+                });
+    }
 
     private void validateBeer (BeerDto beerDto) {
         Errors errors = new BeanPropertyBindingResult (beerDto, "beerDto");

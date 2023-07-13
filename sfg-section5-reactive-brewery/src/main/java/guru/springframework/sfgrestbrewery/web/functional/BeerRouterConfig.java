@@ -15,16 +15,19 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 public class BeerRouterConfig {
 
-    public static final String API_V_2_BEER_BEER_ID = "/api/v2/beer/{beerId}";
-    public static final String API_V_2_BEER_UPC_UPC = "/api/v2/beerUpc/{upc}";
-    public static final String API_POST_BEER = "/api/v2/beer";
+    public static final String API_V2_BEER_ID = "/api/v2/beer/{beerId}";
+    public static final String API_V2_BEER_UPC = "/api/v2/beerUpc/{upc}";
+    public static final String API_V2_POST_BEER = "/api/v2/beer";
 
     @Bean
-    public RouterFunction<ServerResponse> beerRouterV2 (BeerHandler2 beerHandler2) {
+    public RouterFunction<ServerResponse> beerRouterV2 (BeerHandler beerHandler) {
         return route ()
-                .GET (API_V_2_BEER_BEER_ID, accept (MediaType.APPLICATION_JSON), beerHandler2::getBeerById)
-                .GET (API_V_2_BEER_UPC_UPC, accept (MediaType.APPLICATION_JSON), beerHandler2::getBeerByUpc)
-                .POST (API_POST_BEER, accept (MediaType.APPLICATION_JSON), beerHandler2::saveNewBeer)
+                .GET (API_V2_BEER_ID, accept (MediaType.APPLICATION_JSON), beerHandler::getBeerById)
+                .GET (API_V2_BEER_UPC, accept (MediaType.APPLICATION_JSON), beerHandler::getBeerByUpc)
+                .POST (API_V2_POST_BEER, accept (MediaType.APPLICATION_JSON), beerHandler::saveNewBeer)
+                .PUT (API_V2_BEER_ID, accept (MediaType.APPLICATION_JSON), beerHandler::updateBeer)
                 .build ();
     }
+
+
 }
