@@ -24,6 +24,7 @@
         <module>netflux</module>
         <module>streaming-stock-quote-service</module>
         <module>mongo-stock-quote-service</module>
+        <module>rabbit-stock-quote-service</module>
     </modules>
 
     <properties>
